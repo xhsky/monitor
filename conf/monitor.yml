@@ -1,0 +1,11 @@
+base_dir:/opt
+
+
+redis:
+  ip:"192.168.1.123"
+  password:""
+
+version:
+  monitor:"0.1"
+  nginx:"1.14"
+
