@@ -9,7 +9,7 @@ import time
 import os, sys
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
-from module import status
+from module import db
 
 def interval_dump(dump, dump_type, dump_info):
     if type(dump_info).__name__ == 'dict':
@@ -57,8 +57,8 @@ def interval_dump(dump, dump_type, dump_info):
 
 if __name__ == "__main__":
     monkey.patch_all()
-    client=status.redis_conn("192.168.1.123", "b840fc02d524045429941cc15f59e41cb7be6c599")
-    dump=status.dump_to_redis(client)
+    client=db.redis_conn("192.168.1.123", "b840fc02d524045429941cc15f59e41cb7be6c599")
+    dump=db.dump_to_redis(client)
 
     args={
             "ip": "192.168.1.119", 
