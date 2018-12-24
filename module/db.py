@@ -40,6 +40,21 @@ class redis_conn(object):
             data=json.loads(temp)
             return data
 
+    def publish(self, channel, message):
+        temp=json.dumps(message)
+        self.__conn.publish(channel, temp)
+
+    def subscribe(self, channel):
+        ps=self.__conn.pubsub()
+        ps.subscribe(channel)
+        return ps
+
+    def hget(self, name, key):
+        return self.__conn.hget(name, key)
+
+    def hset(self, name, key, value):
+        self.__conn.hset(name, key, value)
+
     def __del__(self):
         pass        
 
