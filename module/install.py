@@ -17,6 +17,12 @@ class install(object):
     def extra(self, pkg_file, dirs):
         t=tarfile.open(pkg_file)
         t.extractall(path=dirs)
+    
+    def init_data(self):
+        pass
+
+    def init_config(self):
+        pass
 
 if __name__ == "__main__":
 
