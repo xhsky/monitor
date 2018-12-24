@@ -1,9 +1,11 @@
 base_dir: 
 
 
-redis:
+db:
   ip: "192.168.1.123"
-  password: ""
+  port: "6379"
+  password: "b840fc02d524045429941cc15f59e41cb7be6c599"
+  db_name: "0"
 
 version:
   monitor: "0.1"

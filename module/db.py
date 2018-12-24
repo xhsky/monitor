@@ -4,10 +4,12 @@
 
 import psutil, redis
 import time, json, socket
+from module import logger 
 
 class redis_conn(object):
     def __init__(self, host, password, port=6379, db=0):
         self.__pool=redis.ConnectionPool(host=host, password=password, port=port, db=db, encoding='utf-8', decode_responses=True)
+        self.log=logger.logger()
 
     def connect(self):
         self.__conn=redis.Redis(connection_pool=self.__pool)
@@ -15,11 +17,28 @@ class redis_conn(object):
     def str_set(self, key, values):
         temp=json.dumps(values)
         self.__conn.set(key, temp)
+    
+    def str_get(self, key):
+        temp=self.__conn.get(key)
+        data=json.loads(temp)
+        return data
 
-    def list_set(self, key, values, retain_num):
+    def stat_list_set(self, key, values, retain_num):
         temp=json.dumps(values)
         self.__conn.lpush(key, temp)
         self.__conn.ltrim(key, 0, retain_num)
+
+    def list_set(self, key, values):
+        temp=json.dumps(values)
+        self.__conn.lpush(key, temp)
+
+    def list_get(self, key):
+        temp=self.__conn.rpop(key)
+        if temp is None:
+            self.log.log("warn","前台未向数据库写入数据")
+        else:
+            data=json.loads(temp)
+            return data
 
     def __del__(self):
         pass        
@@ -51,7 +70,7 @@ class dump_to_redis(object):
                 "time": time.time(), 
                 "cpu_percent": cpu_percent
                 }
-        self.__obj.list_set("%s_cpu_util" % self.__ip, cpu_util, retain_num)
+        self.__obj.stat_list_set("%s_cpu_util" % self.__ip, cpu_util, retain_num)
 
     def dump_mem_size(self):
         mem_size={'time':time.time()}
@@ -77,7 +96,7 @@ class dump_to_redis(object):
                 "swap_used": temp2[2], 
                 "swap_percent": temp2[3]
                 }
-        self.__obj.list_set('%s_mem_util' % self.__ip, mem_util, retain_num)
+        self.__obj.stat_list_set('%s_mem_util' % self.__ip, mem_util, retain_num)
 
     def dump_disk_info(self):
         disk_info={'time':time.time()}
@@ -100,7 +119,7 @@ class dump_to_redis(object):
                     "free": single_disk_util[2], 
                     "percent": single_disk_util[3]
                     }
-        self.__obj.list_set("%s_disk_util" % self.__ip, disk_util, retain_num)
+        self.__obj.stat_list_set("%s_disk_util" % self.__ip, disk_util, retain_num)
 
     def dump_network_io(self, interval=5, retain_num=1):
         start_io=psutil.net_io_counters()
@@ -109,7 +128,7 @@ class dump_to_redis(object):
         network_io={"time":time.time()}
         network_io["bytes_sent"]=int((end_io[0]-start_io[0])/interval)
         network_io["bytes_recv"]=int((end_io[1]-start_io[1])/interval)
-        self.__obj.list_set("%s_network_io" % self.__ip, network_io, retain_num)
+        self.__obj.stat_list_set("%s_network_io" % self.__ip, network_io, retain_num)
 
     def dump_disk_io(self, interval=5, retain_num=1):
         start_io=psutil.disk_io_counters()
@@ -118,7 +137,7 @@ class dump_to_redis(object):
         disk_io={"time":time.time()}
         disk_io["read_bytes"]=int((end_io[2]-start_io[2])/interval)
         disk_io["write_bytes"]=int((end_io[3]-start_io[3])/interval)
-        self.__obj.list_set("%s_disk_io" % self.__ip, disk_io, retain_num)
+        self.__obj.stat_list_set("%s_disk_io" % self.__ip, disk_io, retain_num)
 
     def dump_users(self):
         users={"time":time.time()}
