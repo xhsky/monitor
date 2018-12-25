@@ -1,19 +1,20 @@
 base_dir: /opt
+database: monitor
 
 
 db:
-  ip: "192.168.1.123"
-  port: "6379"
-  password: "b840fc02d524045429941cc15f59e41cb7be6c599"
-  db_name: "0"
+  ip: 192.168.1.123
+  port: 6379
+  password: b840fc02d524045429941cc15f59e41cb7be6c599
+  db_name: 0
 
 version:
-  monitor: "0.1"
-  nginx: "1.14.1"
-  jdk: "8.0.191"
-  tomcat: "8.5.37"
-  redis: "5.0.2"
-  mysql: "8.0.13"
-  #mongodb: "4.0.4"
-  #postgresql: "11.1"
+  monitor: 0.1
+  nginx: 1.14.1
+  jdk: 8.0.191
+  tomcat: 8.5.37
+  redis: 5.0.2
+  mysql: 8.0.13
+  #mongodb: 4.0.4
+  #postgresql: 11.1
 

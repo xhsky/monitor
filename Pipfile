@@ -11,6 +11,7 @@ redis = "*"
 pyyaml = "*"
 psutil = "*"
 gevent = "*"
+daemon = "*"
 
 [requires]
 python_version = "3.7"

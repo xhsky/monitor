@@ -14,20 +14,6 @@ class client(object):
         self.port=port
         self.user=username
         self.log=logger.logger()
-    """
-    def port_conn(self, host_list):
-
-        sk=socket.socket()
-        sk.settimeout(1)
-
-        for i in host_list:
-            try:
-                sk.connect((i, port))
-                self.log.logger("info", "%s正常连接" % i)
-            except Exception as e:
-                self.log.logger("error", "%s无法连接: %s" % (i, e))
-        sk.close()
-    """
 
     def password_conn(self, host_dict): 
         """校验端口连通和密码正确性, host_dict为 hostname:password 的字典, 返回 hostname:N 的字典"""
@@ -53,7 +39,7 @@ class client(object):
         else:
             return 0
 
-    def gen_keys(self, key_dir="%s/keys" % base_dir):
+    def gen_keys(self, key_dir="%s/data/keys" % base_dir):
         self.__key_dir=key_dir
         """生成公私钥对"""
 

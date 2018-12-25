@@ -5,6 +5,7 @@
 import psutil, redis
 import time, json, socket
 from module import logger 
+import sqlite3
 
 class redis_conn(object):
     def __init__(self, host, password, port=6379, db=0):
@@ -55,8 +56,36 @@ class redis_conn(object):
     def hset(self, name, key, value):
         self.__conn.hset(name, key, value)
 
+    def brpop(self, key):
+        self.__conn.brpop(key, timeout=0)
+
     def __del__(self):
         pass        
+
+class sqlite_conn(object):
+    def __init__(self, database):
+        self.__conn=sqlite3.connect(database)
+        self.__cursor=self.__conn.cursor()
+
+    def create(self, sql):
+        self.__cursor.execute(sql)
+
+    def update(self, sql, value):
+        self.__cursor.execute(sql, value)
+
+    def insert(self, sql, data):
+        self.__cursor.executemany(sq1, data)
+
+    def fetchall(self, sql):
+        self.__cursor.fetchall(sql)
+
+    def commit(self):
+        self.__conn.commit()
+
+    def __del__(self):
+        self.__cursor.close()
+        self.__conn.close()
+
 
 class soft_status(object):
     def __init__(self):

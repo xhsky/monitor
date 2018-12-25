@@ -5,7 +5,7 @@
 import logging.config
 import yaml
 class logger(object):
-    def __init__(self, log_config_file="../conf/logger.yml"):
+    def __init__(self, log_config_file="./conf/logger.yml"):
         with open(log_config_file, "r", encoding="utf8") as f:
             dict_log_conf=yaml.load(f)
         logging.config.dictConfig(dict_log_conf)
