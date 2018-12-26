@@ -52,6 +52,8 @@ class redis_conn(object):
 
     def hget(self, name, key):
         return self.__conn.hget(name, key)
+    def hgetall(self, name):
+        return self.__conn.hgetall(name)
 
     def hset(self, name, key, value):
         self.__conn.hset(name, key, value)

@@ -1,7 +1,7 @@
 base_dir: /opt
+pid: data/monitor.pid
 database: monitor
 run_user: dream
-
 
 db:
   ip: 192.168.1.123
@@ -18,4 +18,3 @@ version:
   mysql: 8.0.13
   #mongodb: 4.0.4
   #postgresql: 11.1
-
