@@ -4,11 +4,9 @@
 
 import gevent, yaml
 from gevent import monkey
-import time, json
-import os, signal
+import time, json, os
 from module import db, common, logger
 
-from multiprocessing import Process
 
 def mult_insert(args, name, ip):
     pid=os.getpid()

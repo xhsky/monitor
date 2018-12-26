@@ -1,5 +1,6 @@
 base_dir: /opt
 database: monitor
+run_user: dream
 
 
 db:

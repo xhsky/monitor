@@ -25,6 +25,7 @@ if __name__ == "__main__":
     monkey.patch_all() 
 
     base_dir=common.base_dir(__file__)
+    os.chdir(base_dir)
 
     # 日志
     logger_config="%s/conf/logger.yml" %  base_dir
@@ -46,6 +47,7 @@ if __name__ == "__main__":
     pid=os.getpid()
     #sql="insert into process_id values(?,?) on conflict(ip) do update set pid=?"
     #db_client.update(sql, (ip, pid, pid))
+    print("main pid:", os.getpid())
 
 
     try:
