@@ -104,8 +104,7 @@ venv.bak/
 .mypy_cache/
 
 # sky set
-*.log
-test/*
+*.aof
 share/package/*
 .*.sw[poz]
 *.pid
