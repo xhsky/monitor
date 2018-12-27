@@ -21,7 +21,7 @@ class install(object):
     def init(self):
         # 更改软件目录用户
         soft_dir="%s%s" % (self.__install_dir, self.__soft_name)
-        os.system('chown -R %s:%s %s' % (soft_dir, self.__user, self.__user))
+        os.system('chown -R %s:%s %s' % (self.__user, self.__user, self.__install_dir))
 
         # 初始化配置文件
         
@@ -32,6 +32,7 @@ class install(object):
             self.__log.log("info", "mysql初始化完成")
 
     def set_env(self):
+        os.system("ulimit -n 65536")
         if self.__soft_name=="redis":
             try: 
                 os.system('echo 1024 > /proc/sys/net/core/somaxconn')
@@ -51,16 +52,17 @@ class install(object):
     def read_pid(self, start_command, pid_file):
         try:
             if self.__soft_name=="nginx":
-                os.system(start_commond)
+                os.system(start_command)
             elif self.__soft_name=="mysql":
-                os.system(start_commond)
+                os.system(start_command)
             else:
                 start_command="su %s -c '%s'" % (self.__user, start_command)
-                os.system(start_commond)
+                os.system(start_command)
+            time.sleep(1)
             try:
                 with open(pid_file, "r") as f:
-                    pid=f.read()
-                    self.log.log("info", "%s已启动, Pid: %s" % (self.__soft_name, pid))
+                    pid=f.read().strip()
+                    self.__log.log("info", "%s已启动, Pid: %s" % (self.__soft_name, pid))
                     return pid
             except Exception as e:
                 self.__log.log("error", "%s无法启动, 查看相关日志!" % self.__soft_name)
@@ -69,22 +71,21 @@ class install(object):
 
     def start(self):
         if self.__soft_name=="redis":
-            start_commond="%s/redis/bin/redis-server %s/redis/conf/redis.conf" % (self.__install_dir, self.__install_dir)
+            start_command="%s/redis/bin/redis-server %s/redis/conf/redis.conf" % (self.__install_dir, self.__install_dir)
             pid_file="%s/redis/redis.pid" % self.__install_dir
-            pid=self.read_pid(start_command, pif_file)
+            pid=self.read_pid(start_command, pid_file)
         elif self.__soft_name=="nginx":
-            start_commond="%s/nginx/sbin/nginx" % self.__install_dir
+            start_command="%s/nginx/sbin/nginx" % self.__install_dir
             pid_file="%s/nginx/logs/nginx.pid" % self.__install_dir
-            pid=self.read_pid(start_command, pif_file)
+            pid=self.read_pid(start_command, pid_file)
         elif soft.__soft_name=="tomcat":
             start_command="%s/tomcat/bin/catalina.sh start" % self.__install_dir
             pid_file=os.getenv("CATALINA_PID")
-            pid=self.read_pid(start_command, pif_file)
+            pid=self.read_pid(start_command, pid_file)
         elif soft.__soft_name=="mysql":
             start_command="%s/mysql/bin/mysqld_safe --defaults-file=%s/mysql/conf/my.cnf --user=mysql" % (self.__install_dir, self.__install_dir)
             pid_file="%s/mysql/logs/mysqld.pid" % self.__install_dir
-            pid=self.read_pid(start_command, pif_file)
-
+            pid=self.read_pid(start_command, pid_file)
 
         return pid
 

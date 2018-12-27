@@ -18,9 +18,9 @@ class client(object):
         sk=socket.socket()
         sk.settimeout(1)
         try:
-            sk.connect((ip, port))
+            sk.connect((ip, self.__port))
             res=0
-        except Exception:
+        except Exception as e:
             res=1
         sk.close()
         return res

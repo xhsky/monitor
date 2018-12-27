@@ -2,10 +2,11 @@ base_dir: /opt
 pid: data/monitor.pid
 database: monitor
 run_user: dream
+password: dream
 
 db:
-  ip: 192.168.1.123
-  port: 6379
+  ip: 192.168.1.108
+  port: 3081
   password: b840fc02d524045429941cc15f59e41cb7be6c599
   db_name: 0
 
