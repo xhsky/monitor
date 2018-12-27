@@ -40,7 +40,6 @@ if __name__ == "__main__":
     conf=config("../test/aaa.xml")
     #conf.ini_config(a, "../test/my.cnf")
     conf.read_config()
-    print(type(conf.config_data))
 
 
     conf.write_config(conf.config_data)

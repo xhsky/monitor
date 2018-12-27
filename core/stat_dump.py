@@ -7,18 +7,6 @@ from gevent import monkey
 import time, json, os
 from module import db, common, logger
 
-
-def mult_insert(args, name, ip):
-    pid=os.getpid()
-    print(ip, pid)
-    db_client.hset(name, ip, pid)
-    gthread_list=[]
-    for dump_type in args:
-        gthread=gevent.spawn(interval_dump, dump, dump_type, args[dump_type])
-        gthread_list.append(gthread)
-
-    gevent.joinall(gthread_list)
-
 def interval_dump(dump, dump_type, dump_info):
     log=logger.logger()
     if type(dump_info).__name__ == 'dict':

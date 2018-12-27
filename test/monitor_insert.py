@@ -51,7 +51,7 @@ if __name__ == "__main__":
             }
     """ 
     args={
-            "ip": "192.168.1.131", 
+            "ip": "192.168.1.108", 
             "disk_io": {
                 "interval": 2, 
                 "retain_hour": 0.1}

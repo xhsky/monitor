@@ -29,18 +29,18 @@ class client(object):
         stat=0
         try:
             self.__ssh.connect(hostname, port=self.__port, username=self.__user, password=password, timeout=1)
-            self.__log.log("info", "%s 正常连接" % i)
+            self.__log.log("info", "%s 正常连接" % hostname)
             stat=1
         except paramiko.ssh_exception.NoValidConnectionsError as e:
-            self.__log.log("error", "无法连接, 请检查%s的%s端口: %s" % (i, self.__port, e))
-            stat="端口无法连接"
+            self.__log.log("error", "无法连接, 请检查%s的%s端口: %s" % (hostname, self.__port, e))
+            stat="%s: 端口无法连接" % hostname
         except paramiko.ssh_exception.AuthenticationException as e:
-            self.__log.log("error", "无法连接, 请检查%s的%s密码: %s" % (i, self.__user, e))
-            stat="密码错误"
+            self.__log.log("error", "无法连接, 请检查%s的%s密码: %s" % (hostname, self.__user, e))
+            stat="%s: 密码错误" % hostname
         except Exception as e:
-            self.__log.log("error", "无法连接, 连接%s产生未知错误: %s" % (i, e))
-            stat="未知错误"
-        ssh.close()
+            self.__log.log("error", "无法连接, 连接%s产生未知错误: %s" % (hostname, e))
+            stat="%s: 未知错误" % hostname
+        self.__ssh.close()
         return stat
 
     def gen_keys(self, key_dir="./data/keys"):
@@ -57,8 +57,8 @@ class client(object):
             key.write_private_key_file(pkey_file)
             # 生成公钥文件
             pub_key_file=key.get_base64()
-            pub_key_sign="%s%s" % (" ".join(["ssh-rsa", pub_key]), "\n")
-            with open(pkey_pub, "w") as f:
+            pub_key_sign="%s%s" % (" ".join(["ssh-rsa", pub_key_file]), "\n")
+            with open(pkey_pub_file, "w") as f:
                 f.write(pub_key_sign)
             self.__log.log("info", "已生成公私钥")
 
@@ -77,18 +77,18 @@ class client(object):
         sftp_file.chmod(384)
         sftp_file.close()
         sftp.close()
-        self.__log.log("info", "%s 已完成免密码通信" % i)
+        self.__log.log("info", "%s 已完成免密码通信" % hostname)
 
     def exec(self, hostname, commands):
         pkey_file="%s/sky_pkey" % self.__key_dir
         self.__ssh.connect(hostname, port=self.__port, username=self.__user, key_filename=pkey_file, timeout=1)
         self.__ssh.exec_command(commands)
         
-    def transfer(self, hostname, local_file, remote_path):
+    def transfer(self, hostname, local_file, remote_file, remote_path):
         pkey_file="%s/sky_pkey" % self.__key_dir
         self.__ssh.connect(hostname, port=self.__port, username=self.__user, key_filename=pkey_file, timeout=1)
         sftp=self.__ssh.open_sftp()
-        sftp.put(local_file, remote_path, confirm=True)
+        sftp.put(local_file, remote_file, confirm=True)
         self.__log.log("info", "安装包传输至%s:%s" % (hostname, remote_path))
         tar_command="tar -xf %s -C %s" % (local_file, remote_path)
         self.__ssh.exec_command(tar_command)
