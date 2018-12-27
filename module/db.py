@@ -4,8 +4,8 @@
 
 import psutil, redis
 import time, json, socket
-from module import logger 
-import sqlite3
+from module import logger, config
+#import sqlite3
 
 class redis_conn(object):
     def __init__(self, host, password, port=6379, db=0):
@@ -87,7 +87,6 @@ class sqlite_conn(object):
     def __del__(self):
         self.__cursor.close()
         self.__conn.close()
-
 
 class soft_status(object):
     def __init__(self):
@@ -196,6 +195,29 @@ class dump_to_redis(object):
                     "started": user[3]
                     }
         self.__obj.str_set("%s_users" % self.__ip, users) 
+
+def get_redis_conn():
+    log=logger.logger()
+    conf=config.config("./conf/monitor.yml")
+    conf_res=conf.get_monitor_conf()
+
+    redis_port=conf_res["db"].get("port")
+    redis_ip=conf_res["db"].get("ip")
+    redis_db=conf_res["db"].get("db_name")
+    redis_password=conf_res["db"].get("password")
+    if redis_ip=="localhost" or redis_ip=="127.0.0.1":
+        log.log("critical", "%s中db选项下ip必须为域名或实际IP" % conf_config)
+        exit()
+
+    try:
+        db_client=redis_conn(redis_ip, redis_password, redis_port, redis_db)
+        conn=db_client.connect()
+        log.log("info", "已连接数据库开始操作")
+        return db_client
+    except Exception as e:
+        log.log("critical", "无法连接数据库: %s" % e)
+
+
 if __name__ == "__main__":
     ip="192.168.1.119"
     red_client=redis_conn("192.168.1.123","b840fc02d524045429941cc15f59e41cb7be6c599")

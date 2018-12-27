@@ -11,6 +11,7 @@ def base_dir(file_name, if_append_path=0):
         sys.path.append(base_dir)
 
     return base_dir
+
 def host_ip():
     try:
         s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

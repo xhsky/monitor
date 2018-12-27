@@ -14,7 +14,6 @@ def install_redis(user):
     soft_install.set_env()
     soft_install.start()
 
-
 if __name__ == "__main__":
     base_dir=common.base_dir(__file__)
     os.chdir(base_dir)
@@ -24,20 +23,8 @@ if __name__ == "__main__":
     log=logger.logger(logger_config)
 
     # 获取配置
-    conf_config="%s/conf/monitor.yml" % base_dir
-    with open(conf_config, "r", encoding="utf8") as config_file:
-        conf=yaml.load(config_file)
-
-    install_dir=conf["base_dir"]
-    user=conf["run_user"]
-
-    redis_port=conf["db"].get("port")
-    redis_ip=conf["db"].get("ip")
-    redis_db=conf["db"].get("db_name")
-    redis_password=conf["db"].get("password")
-    if redis_ip=="localhost" or redis_ip=="127.0.0.1":
-        log.log("critical", "%s中db选项下ip必须为域名或实际IP" % conf_config)
-        exit()
+    #conf_config="%s/conf/monitor.yml" % base_dir
+    
 
     """
     "mult_main.py init|start"
@@ -61,8 +48,6 @@ if __name__ == "__main__":
             # 安装本地redis
             install_redis(user)
 
-            db_client=db.redis_conn(ip, password, port, db_name)
-        conn=db_client.connect()
             res=client.port_conn(redis_ip)
             if res==1:
                 log.log("critical", "%s的%s端口无法连接, 请检查" % (redis_ip, redis_port))

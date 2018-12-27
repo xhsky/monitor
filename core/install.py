@@ -3,28 +3,16 @@
 # sky
 
 import yaml
-from module import db, soft, logger, common
+from module import db, soft, logger, common, config
 
 class local_soft(object):
     def  __init__(self, soft_name):
+        conf=config.config("./conf/monitor.yml")
         self.__log=logger.logger()
         self.__soft_name=soft_name
         self.__ip_soft_info_key="%s_soft_info" %  common.host_ip()
-
-        with open("./conf/monitor.yml", "r") as config_file:
-            self.__res=yaml.load(config_file)
-        ip=self.__res["db"].get("ip")
-        password=self.__res["db"].get("password")
-        port=self.__res["db"].get("port")
-        db_name=self.__res["db"].get("db_name")
-
-        try: 
-            self.__db_client=db.redis_conn(ip, password, port, db_name)
-            conn=db_client.connect()
-            self.log.log("info", "安装程序已连接数据库")
-        except Exception as e:
-            self.log.log("critical", "安装程序无法连接数据库: %s" % e)
-
+        self.__db_client=db.get_redis_conn()
+        self.__res=conf.init_config()
 
     def local_install(self):
         install_dir=self.__res["base_dir"]
@@ -62,22 +50,7 @@ class local_soft(object):
 
 def soft_install():
     log=logger.logger()
-    with open("./conf/monitor.yml", "r") as config_file:
-        res=yaml.load(config_file)
-
-    ip=res["db"].get("ip")
-    password=res["db"].get("password")
-    port=res["db"].get("port")
-    db_name=res["db"].get("db_name")
-    local_db=res["database"]
-
-    try: 
-        db_client=db.redis_conn(ip, password, port, db_name)
-        conn=db_client.connect()
-        log.log("info", "安装程序已连接数据库")
-    except Exception as e:
-        log.log("critical", "安装程序无法连接数据库: %s" % e)
-
+    db_client=db.get_redis_conn()
     ip=common.host_ip()
 
     soft_install_info_key="soft_install_info"   # 主机安装软件信息key, 以订阅发布方式

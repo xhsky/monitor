@@ -4,7 +4,7 @@
 
 import paramiko
 import socket, os
-from module import logger, basedir
+from module import logger
 
 class client(object):
     def __init__(self, port=22, username="root"):

@@ -4,16 +4,15 @@
 
 import os, sys
 import yaml, json
-from module import client, db
+from module import client, db, config
 
 class init(object):
     def __init__(self, host_info_key):
+        conf=config.config("./conf/monitor.yml")
         self.__host_info_key=host_info_key
-        with open("../conf/monitor.yml", "r") as config_file:
-            self.__res=yaml.load(config_file)
+        self.__res=conf.get_monitor_conf()
+        self.__db_client=db.get_redis_conn()
         self.__host_client=client.client()
-        self.__db_client=db.redis_conn(ip, password, port, db_name)
-        conn=db_client.connect()
 
     def login(self):
         ip=self.__res["db"].get("ip")
@@ -30,12 +29,6 @@ class init(object):
                 host_client.key_conn(host_dict)
     def tarns(self, ):
         self.__host_client.transfer(self.__host_info_key,local_file, remote_path)
-
-        
-
-
-
-
 
 if __name__ == "__main__":
     pass

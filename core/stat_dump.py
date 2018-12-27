@@ -88,20 +88,7 @@ def dump():
     monkey.patch_all()
 
     log=logger.logger()
-    with open("./conf/monitor.yml", "r") as config_file:
-        res=yaml.load(config_file)
-
-    ip=res["db"].get("ip")
-    password=res["db"].get("password")
-    port=res["db"].get("port")
-    db_name=res["db"].get("db_name")
-
-    try: 
-        db_client=db.redis_conn(ip, password, port, db_name)
-        conn=db_client.connect()
-        log.log("info", "监控程序已连接数据库")
-    except Exception as e:
-        log.log("critical", "监控无法连接数据库: %s" % e)
+    db_client=db.get_redis_conn()
 
     dump=db.dump_to_redis(db_client)
     ip=common.host_ip()
