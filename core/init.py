@@ -68,7 +68,12 @@ class init(object):
             self.__log.log("info", "各主机传输完成")
 
     def start(self, ip_list):
-        start_command="%s/python/bin/python3 %s/monitor/main.py" % (self.__res["base_dir"], self.__res["base_dir"])
+        start_command="%s/python/bin/python3 %s/monitor/main.py start" % (self.__res["base_dir"], self.__res["base_dir"])
+        for hostname in ip_list:
+            self.__host_client.exec(hostname, start_command)
+            self.__log.log("info", "%s主机监控程序已启动" % hostname)
+    def restart(self, ip_list):
+        start_command="%s/python/bin/python3 %s/monitor/main.py restart" % (self.__res["base_dir"], self.__res["base_dir"])
         for hostname in ip_list:
             self.__host_client.exec(hostname, start_command)
             self.__log.log("info", "%s主机监控程序已启动" % hostname)
