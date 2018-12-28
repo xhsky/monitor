@@ -57,6 +57,7 @@ class redis_conn(object):
 
     def hset(self, name, key, value):
         self.__conn.hset(name, key, value)
+        self.__conn.hmset()
 
     def brpop(self, key):
         self.__conn.brpop(key, timeout=0)
