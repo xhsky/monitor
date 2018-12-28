@@ -50,13 +50,17 @@ class install(object):
                 os.system('echo 1024 > /proc/sys/net/core/somaxconn')
                 os.system('sysctl vm.overcommit_memory=1')
                 os.system('echo never > /sys/kernel/mm/transparent_hugepage/enabled')
-                self.__log.log("info", "Redis系统参数已更改")
+                self.__log.log("info", "%s系统参数已更改" % self.__soft_name)
             except Exception as e:
-                self.__log.log("error", "Redis系统参数更改失败: %s" % e)
+                self.__log.log("error", "%s系统参数更改失败: %s" % (self.__soft_name, e))
         elif self.__soft_name=="tomcat":
-            os.environ["JAVA_HOME"]="%s/jdk" % self.__install_dir
-            os.environ["CATALINA_HOME"]="%s/tomcat" % self.__install_dir
-            os.environ["CATALINA_PID"]="%s/tomcat/bin/catalina.pid" % self.__install_dir
+            try:
+                os.environ["JAVA_HOME"]="%s/jdk" % self.__install_dir
+                os.environ["CATALINA_HOME"]="%s/tomcat" % self.__install_dir
+                os.environ["CATALINA_PID"]="%s/tomcat/bin/catalina.pid" % self.__install_dir
+                self.__log.log("info", "%s系统参数已更改" % self.__soft_name)
+            except Exception as e:
+                self.__log.log("error", "%s系统参数更改失败: %s" % (self.__soft_name, e))
         elif self.__soft_name=="mysql":
             # rpm -ivh libaio
             pass
@@ -70,13 +74,18 @@ class install(object):
             else:
                 start_command="su %s -c '%s'" % (self.__user, start_command)
                 os.system(start_command)
-            time.sleep(1)
-            try:
-                with open(pid_file, "r") as f:
-                    pid=f.read().strip()
+            # 判断pid
+            N=0
+            while N < 10:
+                if os.path.exists(pid_file):
+                    with open(pid_file, "r") as f:
+                        pid=f.read().strip()
                     self.__log.log("info", "%s已启动, Pid: %s" % (self.__soft_name, pid))
                     return pid
-            except Exception as e:
+                else:
+                    time.sleep(1)
+                    N+=1
+            else:
                 self.__log.log("error", "%s无法启动, 查看相关日志!" % self.__soft_name)
         except Exception as e:
             self.__log.log("error", "%s无法启动: %s" % (self.__soft_name, e))
@@ -91,12 +100,12 @@ class install(object):
             start_command="%s/nginx/sbin/nginx" % self.__install_dir
             pid_file="%s/nginx/logs/nginx.pid" % self.__install_dir
             pid=self.read_pid(start_command, pid_file)
-        elif soft.__soft_name=="tomcat":
+        elif self.__soft_name=="tomcat":
             start_command="%s/tomcat/bin/catalina.sh start" % self.__install_dir
             pid_file=os.getenv("CATALINA_PID")
             pid=self.read_pid(start_command, pid_file)
-        elif soft.__soft_name=="mysql":
-            start_command="%s/mysql/bin/mysqld_safe --defaults-file=%s/mysql/conf/my.cnf --user=mysql" % (self.__install_dir, self.__install_dir)
+        elif self.__soft_name=="mysql":
+            start_command="%s/mysql/bin/mysqld_safe --defaults-file=%s/mysql/conf/my.cnf --user=%s &" % (self.__install_dir, self.__install_dir, self.__user)
             pid_file="%s/mysql/logs/mysqld.pid" % self.__install_dir
             pid=self.read_pid(start_command, pid_file)
 

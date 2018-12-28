@@ -4286,3 +4286,143 @@ $13
 192.168.1.108
 $69
 {"tomcat": "0", "jdk": "0", "redis": "0", "nginx": "0", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$69
+{"tomcat": "0", "jdk": "0", "redis": "0", "nginx": "0", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$69
+{"tomcat": "0", "jdk": "0", "redis": "0", "nginx": "0", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$73
+{"tomcat": "0", "jdk": "0", "redis": "0", "nginx": "21074", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$69
+{"tomcat": "0", "jdk": "0", "redis": "0", "nginx": "0", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$73
+{"tomcat": "0", "jdk": "0", "redis": "0", "nginx": "24111", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$77
+{"tomcat": "29858", "jdk": "0", "redis": "0", "nginx": "24111", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$73
+{"tomcat": "0", "jdk": "0", "redis": "0", "nginx": "24111", "mysql": "0"}
+*2
+$6
+SELECT
+$1
+0
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$77
+{"tomcat": "0", "jdk": "0", "redis": "30411", "nginx": "24111", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$73
+{"tomcat": "0", "jdk": "0", "redis": "0", "nginx": "24111", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$77
+{"tomcat": "32542", "jdk": "0", "redis": "0", "nginx": "24111", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$81
+{"tomcat": "32542", "jdk": "0", "redis": "0", "nginx": "24111", "mysql": "12453"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$77
+{"tomcat": "32542", "jdk": "0", "redis": "0", "nginx": "24111", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$81
+{"tomcat": "32542", "jdk": "0", "redis": "0", "nginx": "24111", "mysql": "17704"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$77
+{"tomcat": "32542", "jdk": "0", "redis": "0", "nginx": "24111", "mysql": "0"}
+*4
+$4
+HSET
+$14
+host_soft_info
+$13
+192.168.1.108
+$81
+{"tomcat": "32542", "jdk": "0", "redis": "0", "nginx": "24111", "mysql": "28562"}

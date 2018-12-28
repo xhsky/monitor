@@ -10,7 +10,6 @@ from module import db
 import yaml
 
 if __name__ == "__main__":
-
     with open("./conf/monitor.yml", "r") as config_file:
         res=yaml.load(config_file)
 
@@ -30,8 +29,8 @@ if __name__ == "__main__":
     args={
       "ip": "192.168.1.108", 
       "type": "control", 
-      "soft_name": "nginx", 
-      "action": "stop"
+      "soft_name": "mysql", 
+      "action": "start"
       }
 
     db_client.publish("soft_install_info", args)
