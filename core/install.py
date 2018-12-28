@@ -59,8 +59,6 @@ class local_soft(object):
                     soft_info_dict[self.__soft_name]=pid
                     soft_info=json.dumps(soft_info_dict)
                     self.__db_client.hset(host_soft_info_key, key, soft_info)
-###############################
-                    print(soft_info)
                 else:
                     self.__log.log("error", "无法启动, 请查看%s状态" % self.__soft_name)
             else:

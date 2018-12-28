@@ -18,5 +18,5 @@ handlers:
     backupCount: 3
     encoding: utf-8
 root:
-  level: INFO
+  level: DEBUG
   handlers: [console, file]

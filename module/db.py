@@ -4,8 +4,7 @@
 
 import psutil, redis
 import time, json, socket
-from module import logger, config
-#import sqlite3
+from module import logger, config, common
 
 class redis_conn(object):
     def __init__(self, host, password, port=6379, db=0):
@@ -18,6 +17,9 @@ class redis_conn(object):
     def str_set(self, key, values):
         temp=json.dumps(values)
         self.__conn.set(key, temp)
+    def incr(self, key, second):
+        self.__conn.incr(key)
+        self.__conn.expire(key, second)
     
     def str_get(self, key):
         temp=self.__conn.get(key)
@@ -40,6 +42,12 @@ class redis_conn(object):
         else:
             data=json.loads(temp)
             return data
+    def setex(self, key, second, value):
+        temp=json.dumps(value)
+        self.__conn.setex(key, second, temp)
+    def mget(self, keys):
+        self.__conn.mget(keys)
+
 
     def publish(self, channel, message):
         temp=json.dumps(message)
@@ -57,12 +65,9 @@ class redis_conn(object):
 
     def hset(self, name, key, value):
         self.__conn.hset(name, key, value)
-<<<<<<< HEAD
-        self.__conn.hmset()
-=======
+
     def hmset(self, name, dict_key):
         self.__conn.hmset(name, dict_key)
->>>>>>> a41e50b68d1928db7faff9db97d83bb7aa23f702
 
     def brpop(self, key):
         self.__conn.brpop(key, timeout=0)
@@ -70,45 +75,12 @@ class redis_conn(object):
     def __del__(self):
         pass        
 
-class sqlite_conn(object):
-    def __init__(self, database):
-        self.__conn=sqlite3.connect(database)
-        self.__cursor=self.__conn.cursor()
-
-    def create(self, sql):
-        self.__cursor.execute(sql)
-
-    def update(self, sql, value):
-        self.__cursor.execute(sql, value)
-
-    def insert(self, sql, data):
-        self.__cursor.executemany(sq1, data)
-
-    def fetchall(self, sql):
-        self.__cursor.fetchall(sql)
-
-    def commit(self):
-        self.__conn.commit()
-
-    def __del__(self):
-        self.__cursor.close()
-        self.__conn.close()
-
-class soft_status(object):
-    def __init__(self):
-        pass
-
 class dump_to_redis(object):
     def __init__(self, redis_object):
         self.__obj=redis_object
         self.__obj.connect()
+        self.__ip=common.host_ip()
 
-        try:
-            s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(('8.8.8.8', 80))
-            self.__ip = s.getsockname()[0]
-        finally:
-            s.close()
     def dump_cpu_num(self):
         cpu_num={'time':time.time()}
         cpu_num['cpu_physical_core']=psutil.cpu_count(logical=False)

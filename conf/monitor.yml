@@ -3,6 +3,8 @@ pid: data/monitor.pid
 database: monitor
 run_user: dream
 password: dream
+heartbeat_second: 3
+timeout_second: 5
 
 db:
   ip: 192.168.1.108

@@ -2,7 +2,7 @@
 # coding:utf8
 # sky
 
-from module import logger, soft, client, common, config, sysuser
+from module import logger, soft, client, common, config, sysuser, define
 from core import init
 import yaml, sys, os
 

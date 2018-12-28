@@ -2,10 +2,11 @@
 # coding:utf8
 # sky
 
-from module import logger, common, stats, config
-from core import install,stat_dump 
+from module import logger, common, stats,  config
+from core import install,stat_dump, health
 import gevent
 from gevent import monkey
+import sys
 
 import os, time
 
@@ -17,8 +18,18 @@ def Status():
     log.log("info", "监控程序启动")
     stat_dump.dump()
 
+def Health():
+    log.log("info", "检查程序启动")
+    health.check()
+    
 if __name__ == "__main__":
     monkey.patch_all() 
+    if len(sys.argv)==2:
+        action=sys.argv[1]
+    if action=="restart":
+        force=1
+    elif action=="start":
+        force=0
 
     base_dir=common.base_dir(__file__)
     os.chdir(base_dir)
@@ -33,19 +44,8 @@ if __name__ == "__main__":
     conf_res=conf.get_monitor_conf()
     pid_file=conf_res["pid"]
     db_name=conf_res["database"]
+    log.log("info", "main process: %s" % os.getpid())
     
-    """
-    # pid
-        db_name_path="%s/data/%s" % (base_dir, db_name)
-        db_client=db.sqlite_conn(db_name_path)
-        sql="create table if not exists process_id(ip char(15) primary key, pid int)"
-        db_client.create(sql)
-
-        ip=common.host_ip()
-        pid=os.getpid()
-        sql="insert into process_id values(?,?) on conflict(ip) do update set pid=?"
-        db_client.update(sql, (ip, pid, pid))
-    """
     # 生成pid文件
     try:
         if os.path.exists(pid_file):
@@ -53,12 +53,14 @@ if __name__ == "__main__":
                 pid=int(f.read())
             pid_obj=stats.soft_status(pid)
             if pid_obj.pid_exist():
-                log.log("info", "监控程序(Pid: %s)正在运行, 请不要重复启动" % pid)
-                exit()
-            else:
-                with open(pid_file, "w", encoding="utf8") as f:
-                    pid=str(os.getpid())
-                    f.write(pid)
+                if force==0:
+                    log.log("info", "监控程序(Pid: %s)正在运行, 请不要重复启动" % pid)
+                    exit()
+                elif force==1:
+                    os.kill(pid, 9)
+            with open(pid_file, "w", encoding="utf8") as f:
+                pid=str(os.getpid())
+                f.write(pid)
         else:
             with open(pid_file, "w+", encoding="utf8") as f:
                 pid=str(os.getpid())
@@ -72,6 +74,7 @@ if __name__ == "__main__":
     try:
         g1=gevent.spawn(Install, )
         g2=gevent.spawn(Status, )
+        #g3=gevent.spawn(Health, )
         gevent_list=[g1, g2]
         gevent.joinall(gevent_list)
     except Exception as e:

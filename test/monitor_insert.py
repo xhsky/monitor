@@ -24,6 +24,7 @@ if __name__ == "__main__":
     """
     args={
             "ip": "192.168.1.131", 
+            "type": "host"
             "cpu_num": 5, 
             "cpu_util": {
                 "interval": 2, 
@@ -50,12 +51,34 @@ if __name__ == "__main__":
             "users": 5
             }
     """ 
-    args={
-            "ip": "192.168.1.108", 
-            "disk_io": {
+
+    soft_start_args={
+            "ip": "192.168.1.131", 
+            "type": "soft", 
+            "action": "start", 
+            "soft_name": "tomcat", 
+            "interval": 2
+            }
+    soft_stop_args={
+            "ip": "192.168.1.131", 
+            "type": "soft", 
+            "action": "stop", 
+            "soft_name": "tomcat" 
+            }
+    host_start_args={
+            "ip": "192.168.1.131", 
+            "type": "host", 
+            "action": "start", 
+            "network_io": {
                 "interval": 2, 
-                "retain_hour": 0.1}
+                "retain_hour": 0.1
+                }
+            }
+    host_stop_args={
+            "ip": "192.168.1.131", 
+            "type": "host", 
+            "action": "stop"
             }
 
-    db_client.publish("host_stat_info", args)
+    db_client.publish("stat_info", soft_stop_args)
 

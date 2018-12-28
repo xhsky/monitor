@@ -5,7 +5,7 @@
 import gevent, yaml
 from gevent import monkey
 import time, json, os
-from module import db, common, logger
+from module import db, common, logger, stats, define
 
 def interval_dump(dump, dump_type, dump_info):
     log=logger.logger()
@@ -72,6 +72,32 @@ def interval_dump(dump, dump_type, dump_info):
     else:
         pass
 
+def soft_stat_dump(name, interval):
+    log=logger.logger()
+    db_client=db.get_redis_conn()
+    ip=common.host_ip()
+    soft_name=db_client.hget(define.host_soft_info_key, ip)
+    if soft_name is not None:
+        soft_name_dict=json.loads(soft_name)
+        if name in soft_name:
+            pid=int(soft_name[name])
+            if pid!=0:
+                soft_info=stats.soft_status(pid)
+                while True:
+                    soft_info_dict=soft_info.info()
+                    soft_stat_info_key="%s_%s_%s" % (ip, name, define.soft_stat_info_key)
+                    db_client.stat_list_set(soft_stat_info_key, soft_info_dict, 1000)
+                    time.sleep(interval)
+            else:
+                log.log("error", "%s主机上的%s未启动" % (ip, name))
+        else:
+            log.log("error", "%s未在%s主机上安装" % (name, ip))
+    else:
+        log.log("error", "%s主机不在集群中" % ip)
+        
+
+    
+
 def dump():
     monkey.patch_all()
 
@@ -81,34 +107,39 @@ def dump():
     dump=db.dump_to_redis(db_client)
     ip=common.host_ip()
 
-    subs=db_client.subscribe("host_stat_info")  # host_stat_info 为订阅发布模式, 存储需要记录的资源类型
-    """
-    for i in subs.listen():
-        if i["type"]=="message":
-            args=json.loads(i["data"])
-            if args["ip"]==ip:
-                pid=db_client.hget(stat_pid, ip)
-                if pid is not None:
-                    try:
-                        res=os.kill(int(pid), signal.SIGKILL)
-                    except ProcessLookupError as e:
-                        pass
-                p=Process(target=mult_insert, args=(args, stat_pid, ip))
-                p.start()
-    """
+    subs=db_client.subscribe(define.stat_info_key)                         # host_stat_info 为订阅发布模式, 存储需要记录的资源类型
     log.log("info", "监控程序开始准备接收监控信息...")
-    gthread_list=[]                                     # 定义记录资源的协程列表
+    gthread_host_list=[]                                     # 定义记录资源的协程列表
+    gthread_soft_list=[]                                     # 定义记录资源的协程列表
     for i in subs.listen():
         if i["type"]=="message":
             args=json.loads(i["data"])
             if args["ip"]==ip:
-                for i in gthread_list:                  # 杀掉原来的协程列表
-                    gevent.kill(i)
-                gthread_list=[]                         # 重置
-                for dump_type in args:
-                    gthread=gevent.spawn(interval_dump, dump, dump_type, args[dump_type])
-                    gthread_list.append(gthread)
-                #gevent.joinall(gthread_list)
+                if args["type"]=="host":
+                    for i in gthread_host_list:                  # 杀掉原来的协程列表
+                        gevent.kill(i)
+                    gthread_host_list=[]                         # 重置
+                    if args["action"]=="start":
+                        log.log("info", "主机资源记录开启")
+                        for dump_type in args:
+                            gthread=gevent.spawn(interval_dump, dump, dump_type, args[dump_type])
+                            gthread_host_list.append(gthread)
+                        #gevent.joinall(gthread_list)
+                    elif args["action"]=="stop":
+                        log.log("info", "主机资源记录已关闭")
+                elif args["type"]=="soft":
+                    for i in gthread_soft_list:                  # 杀掉原来的协程列表
+                        gevent.kill(i)
+                    gthread_soft_list=[]                         # 重置
+                    if args["action"]=="start":
+                        log.log("info", "软件资源记录开启")
+                        gthread=gevent.spawn(soft_stat_dump, args["soft_name"], args["interval"])
+                        gthread_soft_list.append(gthread)
+                    elif args["action"]=="start":
+                        log.log("info", "软件资源记录已关闭")
+                        
+
+
 
 
 if __name__ == "__main__":
