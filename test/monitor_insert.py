@@ -53,29 +53,26 @@ if __name__ == "__main__":
     """ 
 
     soft_start_args={
-            "ip": "192.168.1.131", 
+            "ip": "192.168.1.114", 
             "type": "soft", 
             "action": "start", 
             "soft_name": "tomcat", 
             "interval": 2
             }
     soft_stop_args={
-            "ip": "192.168.1.131", 
+            "ip": "192.168.1.114", 
             "type": "soft", 
             "action": "stop", 
             "soft_name": "tomcat" 
             }
     host_start_args={
-            "ip": "192.168.1.131", 
+            "ip": "192.168.1.108", 
             "type": "host", 
             "action": "start", 
-            "network_io": {
-                "interval": 2, 
-                "retain_hour": 0.1
-                }
+            "users": 5
             }
     host_stop_args={
-            "ip": "192.168.1.131", 
+            "ip": "192.168.1.116", 
             "type": "host", 
             "action": "stop"
             }
