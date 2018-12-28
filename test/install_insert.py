@@ -21,17 +21,18 @@ if __name__ == "__main__":
     db_client=db.redis_conn(ip, password, port, db_name)
     conn=db_client.connect()
 
-    args={
-      "ip": "192.168.1.108", 
+    args1={
+      "ip": "192.168.1.114", 
       "type": "install", 
-      "soft_name": ["tomcat", "jdk", "redis", "nginx", "mysql"]
+      #"soft_name": ["tomcat", "jdk", "redis", "nginx", "mysql"]
+      "soft_name": ["tomcat", "jdk"]
       }
-    args={
-      "ip": "192.168.1.108", 
+    args2={
+      "ip": "192.168.1.114", 
       "type": "control", 
-      "soft_name": "mysql", 
+      "soft_name": "tomcat", 
       "action": "start"
       }
 
-    db_client.publish("soft_install_info", args)
+    db_client.publish("soft_install_info", args2)
 

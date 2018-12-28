@@ -79,14 +79,14 @@ def soft_stat_dump(name, interval):
     soft_name=db_client.hget(define.host_soft_info_key, ip)
     if soft_name is not None:
         soft_name_dict=json.loads(soft_name)
-        if name in soft_name:
-            pid=int(soft_name[name])
+        if name in soft_name_dict:
+            pid=int(soft_name_dict[name])
             if pid!=0:
                 soft_info=stats.soft_status(pid)
                 while True:
                     soft_info_dict=soft_info.info()
                     soft_stat_info_key="%s_%s_%s" % (ip, name, define.soft_stat_info_key)
-                    db_client.stat_list_set(soft_stat_info_key, soft_info_dict, 1000)
+                    db_client.stat_list_set(soft_stat_info_key, soft_info_dict, 3000)
                     time.sleep(interval)
             else:
                 log.log("error", "%s主机上的%s未启动" % (ip, name))
@@ -135,7 +135,7 @@ def dump():
                         log.log("info", "软件资源记录开启")
                         gthread=gevent.spawn(soft_stat_dump, args["soft_name"], args["interval"])
                         gthread_soft_list.append(gthread)
-                    elif args["action"]=="start":
+                    elif args["action"]=="stop":
                         log.log("info", "软件资源记录已关闭")
                         
 

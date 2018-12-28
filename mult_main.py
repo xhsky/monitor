@@ -82,7 +82,7 @@ if __name__ == "__main__":
                 log.log("critical", "%s的%s端口无法连接, 请检查" % (redis_ip, redis_port))
                 exit()
         elif action=="start":
-            package="python37-monitor.tar.xz"
+            package="monitor-%s.tar.gz" % conf_res["version"]["monitor"]
             local_file="%s/%s" %  (install_dir, package)
             remote_file="%s/%s" % (install_dir, package)
             remote_path=install_dir
@@ -90,7 +90,7 @@ if __name__ == "__main__":
             normal_ip_list=init.login(conn_host_info_key)
             init.tarns(local_file, remote_file, remote_path, normal_ip_list)
             init.start(normal_ip_list)
-            start_command="%s/python/bin/python3 %s/monitor/main.py" % (conf_res["base_dir"],  conf_res["base_dir"])
+            start_command="%s/python/bin/python3 %s/monitor/main.py start" % (conf_res["base_dir"],  conf_res["base_dir"])
             os.system(start_command)
         else:
             print("Usage: %s init|start\n" % sys.argv[0])
