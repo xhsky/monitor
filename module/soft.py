@@ -3,7 +3,7 @@
 # sky
 
 import tarfile, os, time
-from module import logger
+from module import logger, stats
 
 class install(object):
     def __init__(self, user, soft_name, install_dir):
@@ -16,22 +16,34 @@ class install(object):
         try:
             t=tarfile.open(pkg_file)
             t.extractall(path=self.__install_dir)
+            return 0
         except Exception as e:
-            self.__log.log("error", "软件无法解压, 请重试!")
+            self.__log.log("error", "软件无法解压, 请重试!: %s" % e)
+            return 1
     def init(self):
         # 更改软件目录用户
-        soft_dir="%s%s" % (self.__install_dir, self.__soft_name)
+        soft_dir="%s/%s" % (self.__install_dir, self.__soft_name)
         os.system('chown -R %s:%s %s' % (self.__user, self.__user, self.__install_dir))
 
         # 初始化配置文件
         
     def init_data(self):
         if self.__soft_name=="mysql":
-            command="%s/mysql/bin/mysqld --defaults-file=/etc/my.cnf --user=%s --initialize" % (self.__install_dir, self.__user)
-            os.system(command)
-            self.__log.log("info", "mysql初始化完成")
+            rpm_command="rpm -Uvh %s/monitor/share/package/libaio*" % self.__install_dir
+            res=os.system(rpm_command)
+            if res==0 or res==256:
+                self.__log.log("info", "MySQL依赖包libaio安装成功")
+                command="%s/mysql/bin/mysqld --defaults-file=%s/mysql/conf/my.cnf --user=%s --initialize" % (self.__install_dir, self.__install_dir, self.__user)
+                res=os.system(command)
+                if res==0:
+                    self.__log.log("info", "mysql初始化完成")
+                else:
+                  self.__log.log("error", "mysql初始化失败")
+            else: 
+                self.__log.log("error", "MySQL依赖包libaio无法安装, MySQL无法初始化")
 
     def set_env(self):
+        self.__log.log("info", "启动 %s..." % self.__soft_name)
         os.system("ulimit -n 65536")
         if self.__soft_name=="redis":
             try: 
@@ -68,6 +80,7 @@ class install(object):
                 self.__log.log("error", "%s无法启动, 查看相关日志!" % self.__soft_name)
         except Exception as e:
             self.__log.log("error", "%s无法启动: %s" % (self.__soft_name, e))
+        return 0
 
     def start(self):
         if self.__soft_name=="redis":
@@ -89,20 +102,24 @@ class install(object):
 
         return pid
 
-    def stop(self, soft, pid):
-        N=1
-        while True:
+    def stop(self, pid):
+        pid=int(pid)
+        status=stats.soft_status(pid)
+        self.__log.log("info", "%s正在关闭..." % self.__soft_name)
+        N=0
+        while N<60:
             try:
-                if N==60:
-                    self.__log.log("error", "%s无法关闭, 请手动关闭" % soft)
-                else:
+                if status.pid_exist():
                     os.kill(pid, 15)
                     time.sleep(1)
-                N+=1
-                self.__log.log("info", "%s正在关闭..." % soft)
+                else:
+                    self.__log.log("info", "%s已关闭" % self.__soft_name)
+                    return 0
             except ProcessLookupError as e:
-                self.__log.log("info", "%s已关闭" % soft)
-                break
+                self.__log.log("info", "%s已关闭" % self.__soft_name)
+                return 0
+            N+=1
+        self.__log.log("error", "%s无法关闭, 请手动关闭" % self.__soft_name)
 
 if __name__ == "__main__":
 
