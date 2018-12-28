@@ -59,17 +59,23 @@ class local_soft(object):
                     soft_info_dict[self.__soft_name]=pid
                     soft_info=json.dumps(soft_info_dict)
                     self.__db_client.hset(host_soft_info_key, key, soft_info)
+###############################
                     print(soft_info)
+                else:
+                    self.__log.log("error", "无法启动, 请查看%s状态" % self.__soft_name)
             else:
-                self.__log.log("error", "无法启动, 请查看%s状态" % self.__soft_name)
+                self.__log.log("error", "%s 是启动状态" % self.__soft_name)
                 
         elif action=="stop":
-            if self.__soft_name in soft_info_dict and pid!=0:
-              res=sw.stop(pid)
-              if res==0:
-                  soft_info_dict[self.__soft_name]="0"
-                  soft_info=json.dumps(soft_info_dict)
-                  self.__db_client.hset(host_soft_info_key, key, soft_info)
+            if self.__soft_name in soft_info_dict and pid!="0":
+                res=sw.stop(pid)
+                if res==0:
+                    soft_info_dict[self.__soft_name]="0"
+                    soft_info=json.dumps(soft_info_dict)
+                    self.__db_client.hset(host_soft_info_key, key, soft_info)
+            else:
+                self.__log.log("error", "%s 未启动" % self.__soft_name)
+                
         else:
             self.__log.log("error", "action: %s" % action)
 
