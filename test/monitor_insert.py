@@ -56,14 +56,12 @@ if __name__ == "__main__":
             "ip": "192.168.1.114", 
             "type": "soft", 
             "action": "start", 
-            "soft_name": "tomcat", 
-            "interval": 2
+            "soft_name": ["tomcat", "redis"]
             }
     soft_stop_args={
             "ip": "192.168.1.114", 
             "type": "soft", 
-            "action": "stop", 
-            "soft_name": "tomcat" 
+            "action": "stop"
             }
     host_start_args={
             "ip": "192.168.1.108", 

@@ -72,7 +72,7 @@ def interval_dump(dump, dump_type, dump_info):
     else:
         pass
 
-def soft_stat_dump(name, interval):
+def soft_stat_dump(name, interval=2):
     log=logger.logger()
     db_client=db.get_redis_conn()
     ip=common.host_ip()
@@ -133,15 +133,12 @@ def dump():
                     gthread_soft_list=[]                         # 重置
                     if args["action"]=="start":
                         log.log("info", "软件资源记录开启")
-                        gthread=gevent.spawn(soft_stat_dump, args["soft_name"], args["interval"])
+                        for soft in args["soft_name"]:
+                            gthread=gevent.spawn(soft_stat_dump, soft)
                         gthread_soft_list.append(gthread)
                     elif args["action"]=="stop":
                         log.log("info", "软件资源记录已关闭")
                         
-
-
-
-
 if __name__ == "__main__":
     pass
 
