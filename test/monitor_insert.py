@@ -53,10 +53,13 @@ if __name__ == "__main__":
     """ 
 
     soft_start_args={
-            "ip": "192.168.1.114", 
+            "ip": "192.168.1.133", 
             "type": "soft", 
             "action": "start", 
-            "soft_name": ["tomcat", "redis"]
+            "soft_name": {
+                "tomcat": [1, 2],                # 记录间隔, 保留时长(小时)
+                "redis": [1, 2]
+                }
             }
     soft_stop_args={
             "ip": "192.168.1.114", 
@@ -64,16 +67,39 @@ if __name__ == "__main__":
             "action": "stop"
             }
     host_start_args={
-            "ip": "192.168.1.108", 
+            "ip": "192.168.1.133", 
             "type": "host", 
             "action": "start", 
+            "cpu_num": 5, 
+            "cpu_util": {
+                "interval": 2, 
+                "retain_hour": 0.1
+                }, 
+            "mem_size": 5, 
+            "mem_util": {
+                "interval": 2, 
+                "retain_hour": 0.1
+                }, 
+            "disk_info": 5, 
+            "disk_util": {
+                "interval": 2, 
+                "retain_hour": 0.01
+                }, 
+            "network_io": {
+                "interval": 2, 
+                "retain_hour": 0.1
+                }, 
+            "disk_io": {
+                "interval": 2, 
+                "retain_hour": 0.1
+                }, 
             "users": 5
             }
     host_stop_args={
-            "ip": "192.168.1.116", 
+            "ip": "192.168.1.133", 
             "type": "host", 
             "action": "stop"
             }
 
-    db_client.publish("stat_info", soft_stop_args)
+    db_client.publish("stat_info", soft_start_args)
 

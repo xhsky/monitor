@@ -69,7 +69,6 @@ if __name__ == "__main__":
             }
          
     """
-    conn_host_info_key="conn_host_info"   
     if len(sys.argv)==2:
         action=sys.argv[1]
         client=client.client(redis_port)
@@ -87,7 +86,7 @@ if __name__ == "__main__":
             remote_file="%s/%s" % (install_dir, package)
             remote_path=install_dir
             init=init.init()
-            normal_ip_list=init.login(conn_host_info_key)
+            normal_ip_list=init.login(define.conn_host_info_key)
             init.tarns(local_file, remote_file, remote_path, normal_ip_list)
             init.start(normal_ip_list)
             start_command="%s/python/bin/python3 %s/monitor/main.py start" % (conf_res["base_dir"],  conf_res["base_dir"])

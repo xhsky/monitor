@@ -2,8 +2,7 @@
 # coding:utf8
 # sky
 
-import os, sys
-import yaml, json
+import json
 from module import client, db, config, logger, common, define
 
 class init(object):
@@ -14,7 +13,7 @@ class init(object):
         self.__db_client=db.get_redis_conn()
         self.__host_client=client.client()
 
-    def login(self, host_info_key):
+    def passwd_free(self, host_info_key):
         host_dict=self.__db_client.hgetall(host_info_key)
         """
         校验端口连通和密码正确性, host_dict为 hostname:password 的字典, 

@@ -2,13 +2,9 @@
 # coding:utf8
 # sky
 def a():
-    c=2
-    print(c)
+    a=1
+    print(a)
 
-def b():
-    global c = 1
-    a()
-    
 
 if __name__ == "__main__":
-    b()
+    a()

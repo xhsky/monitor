@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding:utf8
 # sky
-
 import yaml, json
 from module import db, soft, logger, common, config, define
 

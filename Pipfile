@@ -12,6 +12,7 @@ pyyaml = "*"
 psutil = "*"
 gevent = "*"
 daemon = "*"
+python-daemon = "*"
 
 [requires]
 python_version = "3.7"
